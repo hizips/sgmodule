@@ -1,0 +1,15 @@
+#!name = YouTube tvOS Diagnostic Logger
+#!desc = Logs privacy-limited YouTube API metadata without changing requests or responses. Disable other YouTube modules while testing.
+#!author = hizips diagnostic
+#!homepage = https://github.com/hizips/sgmodule
+
+[Rule]
+AND,((DOMAIN-SUFFIX,googlevideo.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+
+[Script]
+youtube.tvos.request-log = type=http-request,pattern=^https:\/\/youtubei\.googleapis\.com\/.*,requires-body=0,max-size=-1,binary-body-mode=1,engine=jsc,script-path=https://raw.githubusercontent.com/hizips/sgmodule/d5d645d88f34ab9a13ae83b26e33d133a33eddd2/Script/Youtube/youtube.tvos.diagnostic.js
+youtube.tvos.response-log = type=http-response,pattern=^https:\/\/youtubei\.googleapis\.com\/.*,requires-body=1,max-size=-1,binary-body-mode=1,engine=jsc,script-path=https://raw.githubusercontent.com/hizips/sgmodule/d5d645d88f34ab9a13ae83b26e33d133a33eddd2/Script/Youtube/youtube.tvos.diagnostic.js
+
+[MITM]
+hostname = %APPEND% youtubei.googleapis.com
