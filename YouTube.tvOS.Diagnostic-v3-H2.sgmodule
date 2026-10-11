@@ -1,0 +1,16 @@
+#!name = YouTube tvOS Diagnostic Logger v3 - H2
+#!desc = Final transport test: forces www.youtube.com from QUIC to TCP, enables HTTP/2 MITM, and logs privacy-limited metadata without changing content. Disable other YouTube modules.
+#!author = hizips diagnostic
+#!homepage = https://github.com/hizips/sgmodule
+
+[Rule]
+AND,((DOMAIN,www.youtube.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+AND,((DOMAIN,youtubei.googleapis.com),(PROTOCOL,UDP)),REJECT-NO-DROP
+
+[Script]
+youtube.tvos.request-log = type=http-request,pattern=^https:\/\/(www\.youtube\.com|youtubei\.googleapis\.com)\/.*,requires-body=0,max-size=-1,binary-body-mode=1,engine=jsc,script-path=https://raw.githubusercontent.com/hizips/sgmodule/d5d645d88f34ab9a13ae83b26e33d133a33eddd2/Script/Youtube/youtube.tvos.diagnostic.js
+youtube.tvos.response-log = type=http-response,pattern=^https:\/\/(www\.youtube\.com|youtubei\.googleapis\.com)\/.*,requires-body=1,max-size=-1,binary-body-mode=1,engine=jsc,script-path=https://raw.githubusercontent.com/hizips/sgmodule/d5d645d88f34ab9a13ae83b26e33d133a33eddd2/Script/Youtube/youtube.tvos.diagnostic.js
+
+[MITM]
+h2 = true
+hostname = %APPEND% www.youtube.com,youtubei.googleapis.com
